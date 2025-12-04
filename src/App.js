@@ -1,23 +1,68 @@
-import logo from './logo.svg';
-import './App.css';
+import './index.css';
+import { useState, useEffect } from 'react';
+import Nav from './components/nav.jsx';
+import Current from './components/current.jsx';
+import HourlyForecast from './components/hourlyForecast.jsx';
+import WeekForecast from './components/weekForecast.jsx';
+import { fetchWeather, fetchForecast } from './services/weatherServices.js';
 
 function App() {
+  const [currentWeather, setCurrentWeather] = useState(null);
+  const [forecast, setForecast] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [city, setCity] = useState('Boston');
+
+  useEffect(() => {
+    const getWeatherData = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const current = await fetchWeather(city);
+        const forecastData = await fetchForecast(city, 8);
+        setCurrentWeather(current);
+        setForecast(forecastData);
+      } catch (err) {
+        setError('Failed to fetch weather data');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getWeatherData();
+  }, [city]);
+
+  const handleSearch = (searchCity) => {
+    setCity(searchCity);
+  };
+
+  if (loading) return (
+    <div className="App" role="main">
+      <div className="loading" role="status" aria-live="polite" aria-label="Loading weather data">
+        Loading weather data...
+      </div>
+    </div>
+  );
+  
+  if (error) return (
+    <div className="App" role="main">
+      <div className="error" role="alert" aria-live="assertive">
+        {error}
+      </div>
+    </div>
+  );
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="App" role="main">
+      <Nav onSearch={handleSearch} />
+      {currentWeather && <Current data={currentWeather} />}
+      {forecast && (
+        <div className="forecast__container" aria-label="Weather forecasts">
+          <HourlyForecast data={forecast.forecast.forecastday[0].hour} />
+          <WeekForecast data={forecast.forecast.forecastday} />
+        </div>
+      )}
     </div>
   );
 }
