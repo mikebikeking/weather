@@ -23,7 +23,13 @@ function App() {
         setCurrentWeather(current);
         setForecast(forecastData);
       } catch (err) {
-        setError('Failed to fetch weather data');
+        if (err.message && err.message.includes('API key')) {
+          setError('Weather API key is not configured. Please check your environment variables.');
+        } else if (err.response?.status === 401) {
+          setError('Invalid API key. Please check your Weather API key configuration.');
+        } else {
+          setError('Failed to fetch weather data. Please try again later.');
+        }
         console.error(err);
       } finally {
         setLoading(false);

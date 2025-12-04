@@ -89,6 +89,25 @@ Build weather from the source and install dependencies:
 
 ### Usage
 
+**Environment Variables:**
+
+Before running the application, you need to set up your Weather API key:
+
+1. Get your API key from [WeatherAPI.com](https://www.weatherapi.com/)
+2. Create a `.env` file in the root directory:
+   ```
+   REACT_APP_WEATHERAPI_KEY=your_api_key_here
+   ```
+
+**For Vercel Deployment:**
+
+1. Go to your Vercel project settings
+2. Navigate to "Environment Variables"
+3. Add a new variable:
+   - **Name:** `REACT_APP_WEATHERAPI_KEY`
+   - **Value:** Your Weather API key
+4. Redeploy your application
+
 Run the project with:
 
 **Using [npm](https://www.npmjs.com/):**
